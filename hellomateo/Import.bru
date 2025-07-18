@@ -1,0 +1,23 @@
+meta {
+  name: Import
+  type: http
+  seq: 1
+}
+
+post {
+  url: 127.0.0.1:3000/import
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "source": "crm-tool-x",
+    "data": [
+      {
+        "name": "Alice",
+        "email": "alice@example.com"
+      }
+    ]
+  }
+}
