@@ -1,11 +1,15 @@
 import { serve } from "@hono/node-server";
 import { createClient } from "@supabase/supabase-js";
 import { Hono } from "hono";
+import { logger } from 'hono/logger';
+import { prettyJSON } from 'hono/pretty-json';
+import { zValidator } from '@hono/zod-validator'
+import { ErrorResponse, ImportRequest, ImportRequestSchema,  ImportResponse } from "./types";
 
 // import { quickAddJob } from "graphile-worker";
-// import { ImportRequest, ImportResponse } from "./types";
 
 const app = new Hono();
+app.use(logger(), prettyJSON());
 
 const supabase = createClient(
 	process.env.SUPABASE_URL!,
@@ -14,10 +18,20 @@ const supabase = createClient(
 
 const connectionString = process.env.DATABASE_URL!;
 
-app.post("/import", async (c) => {
-	// TODO
-	return c.json({ message: "TODO" }, 501);
-});
+app.post(
+	"/import",
+	zValidator('json', ImportRequestSchema, (result, c) => {
+		if (!result.success) {
+			return c.json({
+				message: 'Invalid request body',
+				error: result.error
+			} satisfies ErrorResponse);
+		}
+	}),
+	async (c) => {
+		return c.json({ message: "TODO" }, 501);
+	}
+);
 
 app.get("/health", async (c) => {
 	return c.text("OK", 200);

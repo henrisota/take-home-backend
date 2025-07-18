@@ -11,6 +11,9 @@ importers:
       '@hono/node-server':
         specifier: 1.12.0
         version: 1.12.0
+      '@hono/zod-validator':
+        specifier: ^0.7.1
+        version: 0.7.1(hono@4.6.8)(zod@4.0.5)
       '@supabase/supabase-js':
         specifier: 2.38.4
         version: 2.38.4
@@ -20,6 +23,9 @@ importers:
       hono:
         specifier: 4.6.8
         version: 4.6.8
+      zod:
+        specifier: ^4.0.5
+        version: 4.0.5
     devDependencies:
       '@biomejs/biome':
         specifier: 2.1.1
@@ -247,6 +253,12 @@ packages:
   '@hono/node-server@1.12.0':
     resolution: {integrity: sha512-e6oHjNiErRxsZRZBmc2KucuvY3btlO/XPncIpP2X75bRdTilF9GLjm3NHvKKunpJbbJJj31/FoPTksTf8djAVw==}
     engines: {node: '>=18.14.1'}
+
+  '@hono/zod-validator@0.7.1':
+    resolution: {integrity: sha512-8+vJT1RvezAx5sN7hiZ5Mis0RMuFL77nBEcqQQgT9ufoLkxr+7ll461WlBJQcGoQSY6EGMClVae19v3s/7bbgQ==}
+    peerDependencies:
+      hono: '>=3.9.0'
+      zod: ^3.25.0 || ^4.0.0
 
   '@isaacs/fs-minipass@4.0.1':
     resolution: {integrity: sha512-wgm9Ehl2jpeqP3zw/7mo3kRHFp5MEDhqAdwy1fTGkHAwnkGOVsgpvQhL8B5n1qlb01jV3n/bI0ZfZp5lWA1k4w==}
@@ -725,6 +737,9 @@ packages:
     resolution: {integrity: sha512-7dSzzRQ++CKnNI/krKnYRV7JKKPUXMEh61soaHKg9mrWEhzFWhFnxPxGl+69cD1Ou63C13NUPCnmIcrvqCuM6w==}
     engines: {node: '>=12'}
 
+  zod@4.0.5:
+    resolution: {integrity: sha512-/5UuuRPStvHXu7RS+gmvRf4NXrNxpSllGwDnCBcJZtQsKrviYXm54yDGV2KYNLT5kq0lHGcl7lqWJLgSaG+tgA==}
+
 snapshots:
 
   '@babel/code-frame@7.27.1':
@@ -842,6 +857,11 @@ snapshots:
   '@graphile/logger@0.2.0': {}
 
   '@hono/node-server@1.12.0': {}
+
+  '@hono/zod-validator@0.7.1(hono@4.6.8)(zod@4.0.5)':
+    dependencies:
+      hono: 4.6.8
+      zod: 4.0.5
 
   '@isaacs/fs-minipass@4.0.1':
     dependencies:
@@ -1317,3 +1337,5 @@ snapshots:
       string-width: 4.2.3
       y18n: 5.0.8
       yargs-parser: 21.1.1
+
+  zod@4.0.5: {}
