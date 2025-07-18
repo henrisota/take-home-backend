@@ -1,4 +1,9 @@
-export type Payload = Record<string, unknown>[];
+export type ImportEntity = {
+    name: string;
+    email: string;
+}
+
+export type Payload = ImportEntity[];
 
 export interface Result {
     jobId: number;
