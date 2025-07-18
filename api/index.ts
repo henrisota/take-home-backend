@@ -1,11 +1,12 @@
 import { serve } from "@hono/node-server";
 import { createClient } from "@supabase/supabase-js";
+import { zValidator } from '@hono/zod-validator';
 import { Hono } from "hono";
 import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
-import { zValidator } from '@hono/zod-validator'
-import { ErrorResponse, ImportRequest, ImportRequestSchema,  ImportResponse } from "./types";
 
+import { Service } from "./service";
+import { ErrorResponse, ImportRequest, ImportRequestSchema,  ImportResponse } from "./types";
 // import { quickAddJob } from "graphile-worker";
 
 const app = new Hono();
@@ -18,6 +19,8 @@ const supabase = createClient(
 
 const connectionString = process.env.DATABASE_URL!;
 
+const service = new Service();
+
 app.post(
 	"/import",
 	zValidator('json', ImportRequestSchema, (result, c) => {
@@ -29,7 +32,11 @@ app.post(
 		}
 	}),
 	async (c) => {
-		return c.json({ message: "TODO" }, 501);
+		const request = await c.req.json<ImportRequest>();
+
+		const result = await service.import(request.source, request.data);
+
+		return c.json(result satisfies ImportResponse, 201);
 	}
 );
 
