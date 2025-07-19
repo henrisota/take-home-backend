@@ -13,7 +13,6 @@ export class Service {
     constructor() {}
 
     async import(source: string, payload: Payload): Promise<Result> {
-
         return {
             jobId: 0
         };

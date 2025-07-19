@@ -5,6 +5,7 @@ import { Hono } from "hono";
 import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
 
+import { JobRepository } from "./job-repository";
 import { Service } from "./service";
 import { ErrorResponse, ImportRequest, ImportRequestSchema,  ImportResponse } from "./types";
 // import { quickAddJob } from "graphile-worker";
@@ -19,6 +20,9 @@ const supabase = createClient(
 
 const connectionString = process.env.DATABASE_URL!;
 
+const jobRepository = new JobRepository(supabase, {
+	bucket: process.env.JOB_BUCKET ?? 'imports',
+});
 const service = new Service();
 
 app.post(
