@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { Payload } from "./service";
 
 const ImportRequestDataItemSchema = z.object({
   name: z.string(),
@@ -27,4 +28,21 @@ export interface ImportResponse {
 export interface ErrorResponse {
 	message: string;
 	error: object;
+}
+
+export type ImportEntity = {
+	name: string;
+	email: string;
+}
+
+export type Payload = ImportEntity[];
+
+export interface Result {
+	jobId: number;
+}
+
+export interface Job {
+	source: string;
+	payload: Payload;
+	digest: string;
 }

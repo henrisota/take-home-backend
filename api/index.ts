@@ -23,7 +23,7 @@ const connectionString = process.env.DATABASE_URL!;
 const jobRepository = new JobRepository(supabase, {
 	bucket: process.env.JOB_BUCKET ?? 'imports',
 });
-const service = new Service();
+const service = new Service(jobRepository);
 
 app.post(
 	"/import",
