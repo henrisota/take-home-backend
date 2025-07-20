@@ -1,9 +1,11 @@
 import { serve } from "@hono/node-server";
+import { prometheus } from "@hono/prometheus";
 import { zValidator } from "@hono/zod-validator";
 import { createClient } from "@supabase/supabase-js";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { prettyJSON } from "hono/pretty-json";
+import { Registry } from "prom-client";
 import { ContactRepository } from "./contact-repository";
 import { ImportService } from "./import-service";
 import { ImportWorkerService } from "./import-worker-service";
@@ -16,6 +18,10 @@ import {
 } from "./types";
 
 const app = new Hono();
+
+const registry = new Registry();
+const { printMetrics } = prometheus({ registry });
+
 app.use(logger(), prettyJSON());
 
 const supabase = createClient(
@@ -39,7 +45,11 @@ const importWorkerService = new ImportWorkerService(
 		connectionString,
 	},
 );
-const importService = new ImportService(jobRepository, importWorkerService);
+const importService = new ImportService(
+	jobRepository,
+	importWorkerService,
+	registry,
+);
 
 app.post(
 	"/import",
@@ -64,6 +74,8 @@ app.post(
 		);
 	},
 );
+
+app.get("/metrics", printMetrics);
 
 app.get("/health", async (c) => {
 	return c.text("OK", 200);
