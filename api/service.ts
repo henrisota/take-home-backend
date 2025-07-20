@@ -16,11 +16,11 @@ export class Service {
     async import(source: string, payload: Payload): Promise<Result> {
         const id = this.idGenerator();
 
-        const job = {
-            id: `import-${id}`,
+        const job = new Job(
+            `import-${id}`,
             source,
             payload
-        } satisfies Job;
+        );
 
         const savedJob = await this.jobRepository.save(job);
 

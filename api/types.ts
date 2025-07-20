@@ -40,10 +40,28 @@ export interface Result {
 	id: string;
 }
 
-export interface Job {
-	id: string;
-	source: string;
-	payload: Payload;
+export class Job {
+    id: string;
+    source: string;
+    payload: Payload;
+
+    constructor(id: string, source: string, payload: Payload) {
+        this.id = id;
+        this.source = source;
+        this.payload = payload;
+    }
+
+    toPersistence(): Record<string, any> {
+        return {
+            id: this.id,
+            source: this.source,
+            payload: this.payload,
+        };
+    }
+
+    static fromPersistence(data: Record<string, any>): Job {
+        return new Job(data.id, data.source, data.payload);
+    }
 }
 
 export interface WorkerPayload {

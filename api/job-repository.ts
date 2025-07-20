@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import tus from 'tus-js-client';
 import { Job, Payload } from "./types";
+import { SupabaseClient } from '@supabase/supabase-js';
 
 export interface JobRepositoryConfiguration {
     url: string;
@@ -10,15 +11,26 @@ export interface JobRepositoryConfiguration {
 
 export class JobRepository {
     constructor(
+        private readonly supabase: SupabaseClient,
         private readonly configuration: JobRepositoryConfiguration
     ) {}
 
     async get(id: string): Promise<Job> {
-        return {
-            id,
-            source: 'source',
-            payload: []
-        };
+        const { data: _, error: existsError } = await this.supabase.storage.from(this.configuration.bucket).exists(id);
+        
+        if (existsError) {
+            throw new Error(`Failed to check existence of job ${id}: ${String(existsError)}`);
+        }
+        
+        const { data, error } = await this.supabase.storage.from(this.configuration.bucket).download(id);
+
+        if (error) {
+            throw new Error(`Failed to get payload of job ${id}: ${String(error)}`);
+        }
+
+        const content = await data.text();
+        
+        return Job.fromPersistence(JSON.parse(content));
     }
 
     async save(job: Job): Promise<Job> {
@@ -27,9 +39,9 @@ export class JobRepository {
     }
 
     private async upload(job: Job): Promise<boolean> {
-        const { id, payload } = job;
+        const { id } = job;
 
-        const buffer = Buffer.from(JSON.stringify(payload), 'utf-8');
+        const buffer = Buffer.from(JSON.stringify(job.toPersistence()), 'utf-8');
 
         return new Promise<boolean>((resolve, reject) => {
             const upload = new tus.Upload(buffer, {
