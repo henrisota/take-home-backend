@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { Payload } from "./service";
 
 const ImportRequestDataItemSchema = z.object({
   name: z.string(),
@@ -44,5 +43,4 @@ export interface Result {
 export interface Job {
 	source: string;
 	payload: Payload;
-	digest: string;
 }

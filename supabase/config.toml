@@ -95,7 +95,7 @@ file_size_limit = "50MiB"
 # enabled = true
 
 [storage.buckets.imports]
-public = false
+public = true
 objects_path = "imports"
 
 [auth]

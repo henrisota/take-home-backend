@@ -20,7 +20,9 @@ const supabase = createClient(
 
 const connectionString = process.env.DATABASE_URL!;
 
-const jobRepository = new JobRepository(supabase, {
+const jobRepository = new JobRepository({
+	url: process.env.SUPABASE_URL!,
+	key: process.env.SUPABASE_SERVICE_ROLE_KEY!,
 	bucket: process.env.JOB_BUCKET ?? 'imports',
 });
 const service = new Service(jobRepository);
