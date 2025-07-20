@@ -18,6 +18,7 @@ export class ImportService {
 		this.jobCreatedCounter = new Counter({
 			name: "import_jobs_created",
 			help: "number of import jobs created",
+			labelNames: ['id', 'source'],
 			registers: [metricsRegistry],
 		});
 	}
@@ -34,7 +35,7 @@ export class ImportService {
 			source,
 		});
 
-		this.jobCreatedCounter.inc();
+		this.jobCreatedCounter.labels(id, source).inc();
 
 		return {
 			id: job.id,
