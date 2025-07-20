@@ -9,6 +9,7 @@ import { JobRepository } from "./job-repository";
 import { ImportService } from "./import-service";
 import { ErrorResponse, ImportRequest, ImportRequestSchema,  ImportResponse } from "./types";
 import { ImportWorkerService } from "./import-worker-service";
+import { ContactRepository } from "./contact-repository";
 
 const app = new Hono();
 app.use(logger(), prettyJSON());
@@ -20,6 +21,10 @@ const supabase = createClient(
 
 const connectionString = process.env.DATABASE_URL!;
 
+const contactRepository = new ContactRepository(
+	supabase,
+	{}
+);
 const jobRepository = new JobRepository(
 	supabase,
 	{
@@ -30,6 +35,7 @@ const jobRepository = new JobRepository(
 );
 
 const importWorkerService = new ImportWorkerService(
+	contactRepository,
 	jobRepository,
 	{
 		connectionString

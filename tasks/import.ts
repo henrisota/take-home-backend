@@ -1,6 +1,7 @@
+import { ContactRepository } from "@/api/contact-repository";
+import { ImportWorkerService } from "@/api/import-worker-service";
 import { JobRepository } from "@/api/job-repository";
 import { WorkerPayload } from "@/api/types";
-import { ImportWorkerService } from "@/api/import-worker-service";
 import { createClient } from "@supabase/supabase-js";
 import type { Task } from "graphile-worker";
 
@@ -19,6 +20,10 @@ const supabase = createClient(
 
 const connectionString = process.env.DATABASE_URL!;
 
+const contactRepository = new ContactRepository(
+	supabase,
+	{}
+);
 const jobRepository = new JobRepository(
 	supabase,
 	{
@@ -27,7 +32,9 @@ const jobRepository = new JobRepository(
 		bucket: process.env.JOB_BUCKET ?? 'imports',
 	}
 );
+
 const importWorkerService = new ImportWorkerService(
+	contactRepository,
 	jobRepository,
 	{
 		connectionString	

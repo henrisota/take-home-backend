@@ -1,6 +1,7 @@
 import { makeWorkerUtils, WorkerUtils } from "graphile-worker";
-import { WorkerPayload } from "./types";
+import { Contact, WorkerPayload } from "./types";
 import { JobRepository } from "./job-repository";
+import { ContactRepository } from "./contact-repository";
 
 export interface WorkerServiceConfiguration {
     connectionString: string;
@@ -10,6 +11,7 @@ export class ImportWorkerService {
     private worker: WorkerUtils | undefined;
 
     constructor(
+        private readonly contactRepository: ContactRepository,
         private readonly jobRepository: JobRepository,
         private readonly configuration: WorkerServiceConfiguration
     ) {}
@@ -32,7 +34,15 @@ export class ImportWorkerService {
 
         const importJob = await this.jobRepository.get(id);
 
-        console.info(`Completed import job ${id}`);
+        const contacts = importJob.payload.map((entity) => ({
+            name: entity.name,
+            email: entity.email,
+            source: importJob.source
+        }) satisfies Contact);
+
+        const processedContacts = await this.contactRepository.batchSave(contacts);
+
+        console.info(`Completed import job ${id} by processing ${processedContacts.length} contacts`);
     }
 
     private async initializeWorker(): Promise<WorkerUtils> {
