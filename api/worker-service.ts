@@ -21,6 +21,12 @@ export class WorkerService {
         console.info(`Queued job ${id}`);
     }
 
+    async processJob(payload: WorkerPayload) {
+        const { id, source } = payload;
+
+	    console.info(`Starting import job ${id} from source ${source}`);
+    }
+
     private async initializeWorker(): Promise<WorkerUtils> {
         if (!this.worker) {
             this.worker = await makeWorkerUtils({

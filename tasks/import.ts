@@ -1,4 +1,5 @@
 import { WorkerPayload } from "@/api/types";
+import { WorkerService } from "@/api/worker-service";
 import { createClient } from "@supabase/supabase-js";
 import type { Task } from "graphile-worker";
 
@@ -15,10 +16,14 @@ const supabase = createClient(
 	process.env.SUPABASE_SERVICE_ROLE_KEY!,
 );
 
-const processImportJob: Task<'import'> = async (payload, { logger }) => {
-	const { id, source } = payload;
+const connectionString = process.env.DATABASE_URL!;
 
-	logger.info(`Starting import job ${id} from source ${source}`);
+const workerService = new WorkerService({
+	connectionString	
+});
+
+const processImportJob: Task<'import'> = async (payload) => {
+	await workerService.processJob(payload);
 };
 
 export default processImportJob;
