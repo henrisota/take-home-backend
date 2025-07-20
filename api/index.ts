@@ -8,7 +8,6 @@ import { prettyJSON } from 'hono/pretty-json';
 import { JobRepository } from "./job-repository";
 import { Service } from "./service";
 import { ErrorResponse, ImportRequest, ImportRequestSchema,  ImportResponse } from "./types";
-// import { quickAddJob } from "graphile-worker";
 
 const app = new Hono();
 app.use(logger(), prettyJSON());
@@ -25,6 +24,7 @@ const jobRepository = new JobRepository({
 	key: process.env.SUPABASE_SERVICE_ROLE_KEY!,
 	bucket: process.env.JOB_BUCKET ?? 'imports',
 });
+
 const service = new Service(jobRepository);
 
 app.post(
