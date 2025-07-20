@@ -26,9 +26,12 @@ const jobRepository = new JobRepository({
 	bucket: process.env.JOB_BUCKET ?? 'imports',
 });
 
-const workerService = new WorkerService({
-	connectionString
-});
+const workerService = new WorkerService(
+	jobRepository,
+	{
+		connectionString
+	}
+);
 const importService = new Service(jobRepository, workerService);
 
 app.post(

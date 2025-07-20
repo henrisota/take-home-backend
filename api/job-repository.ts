@@ -13,6 +13,14 @@ export class JobRepository {
         private readonly configuration: JobRepositoryConfiguration
     ) {}
 
+    async get(id: string): Promise<Job> {
+        return {
+            id,
+            source: 'source',
+            payload: []
+        };
+    }
+
     async save(job: Job): Promise<Job> {
         await this.upload(job);
         return job;
