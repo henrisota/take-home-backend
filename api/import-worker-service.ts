@@ -44,10 +44,11 @@ export class ImportWorkerService {
 		);
 
 		const uniqueContacts = Array.from(
-			new Map(contacts.map((contact) => [contact.email, contact])).values()
+			new Map(contacts.map((contact) => [contact.email, contact])).values(),
 		);
 
-		const processedContacts = await this.contactRepository.batchSave(uniqueContacts);
+		const processedContacts =
+			await this.contactRepository.batchSave(uniqueContacts);
 
 		console.info(
 			`Completed import job ${id} by processing ${processedContacts.length} contacts`,

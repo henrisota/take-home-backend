@@ -9,26 +9,6 @@ export class ContactRepository {
 		private readonly configuration: ContactRepositoryConfiguration,
 	) {}
 
-	async save(contact: Contact): Promise<ProcessedContact> {
-		const { data, error } = await this.supabase
-			.from("contacts")
-			.insert([contact])
-			.select()
-			.single();
-
-		if (error) {
-			throw new Error(`Failed to save contact ${contact}: ${String(error)}`);
-		}
-
-		return {
-			id: data.id,
-			name: data.name,
-			email: data.email,
-			source: data.source,
-			imported_at: data.imported_at,
-		} satisfies ProcessedContact;
-	}
-
 	async batchSave(contacts: Contact[]): Promise<ProcessedContact[]> {
 		if (!contacts.length) {
 			return [];
