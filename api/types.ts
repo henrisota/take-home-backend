@@ -34,18 +34,18 @@ export type ImportEntity = {
 	email: string;
 }
 
-export type Payload = ImportEntity[];
+export type ImportPayload = ImportEntity[];
 
-export interface Result {
+export interface ImportResult {
 	id: string;
 }
 
 export class Job {
     id: string;
     source: string;
-    payload: Payload;
+    payload: ImportPayload;
 
-    constructor(id: string, source: string, payload: Payload) {
+    constructor(id: string, source: string, payload: ImportPayload) {
         this.id = id;
         this.source = source;
         this.payload = payload;

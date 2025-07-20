@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import tus from 'tus-js-client';
-import { Job, Payload } from "./types";
+import { Job, ImportPayload } from "./types";
 import { SupabaseClient } from '@supabase/supabase-js';
 
 export interface JobRepositoryConfiguration {
@@ -34,16 +34,11 @@ export class JobRepository {
     }
 
     async save(job: Job): Promise<Job> {
-        await this.upload(job);
-        return job;
-    }
-
-    private async upload(job: Job): Promise<boolean> {
         const { id } = job;
 
         const buffer = Buffer.from(JSON.stringify(job.toPersistence()), 'utf-8');
 
-        return new Promise<boolean>((resolve, reject) => {
+        await new Promise<boolean>((resolve, reject) => {
             const upload = new tus.Upload(buffer, {
                 endpoint: `${this.configuration.url}/storage/v1/upload/resumable`,
                 retryDelays: [0, 3000, 5000, 10000, 20000],
@@ -84,6 +79,8 @@ export class JobRepository {
 
                 upload.start();
             })
-        })
+        });
+
+        return job;
     }
 }

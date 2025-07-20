@@ -1,6 +1,6 @@
 import { customAlphabet } from "nanoid";
 import { JobRepository } from "./job-repository";
-import { Job, Payload, Result } from "./types";
+import { Job, ImportPayload, ImportResult } from "./types";
 import { ImportWorkerService } from "./import-worker-service";
 
 export class ImportService {
@@ -13,7 +13,7 @@ export class ImportService {
         this.idGenerator = customAlphabet('1234567890abcdef', 10);
     }
 
-    async import(source: string, payload: Payload): Promise<Result> {
+    async import(source: string, payload: ImportPayload): Promise<ImportResult> {
         const id = this.idGenerator();
 
         const job = new Job(
