@@ -21,7 +21,7 @@ export interface ImportRequest {
 }
 
 export interface ImportResponse {
-	jobId: number;
+	jobId: string;
 }
 
 export interface ErrorResponse {
@@ -37,10 +37,11 @@ export type ImportEntity = {
 export type Payload = ImportEntity[];
 
 export interface Result {
-	jobId: number;
+	id: string;
 }
 
 export interface Job {
+	id: string;
 	source: string;
 	payload: Payload;
 }

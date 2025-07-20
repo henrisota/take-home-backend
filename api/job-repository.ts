@@ -18,26 +18,13 @@ export class JobRepository {
         return job;
     }
 
-    private hashSource(source: string): string {
-        const hash = crypto.createHash('sha256');
-        hash.update(source);
-        return hash.digest('hex');
-    }
-
-    private hashPayload(payload: Payload): string {
-        const hash = crypto.createHash('sha256');
-        hash.update(JSON.stringify(payload));
-        return hash.digest('hex')
-    }
-
     private async upload(job: Job): Promise<boolean> {
-        const { source, payload } = job;
+        const { id, payload } = job;
 
-        const name = [this.hashSource(source), this.hashPayload(payload)].join('/');
         const buffer = Buffer.from(JSON.stringify(payload), 'utf-8');
 
         return new Promise<boolean>((resolve, reject) => {
-            var upload = new tus.Upload(buffer, {
+            const upload = new tus.Upload(buffer, {
                 endpoint: `${this.configuration.url}/storage/v1/upload/resumable`,
                 retryDelays: [0, 3000, 5000, 10000, 20000],
                 headers: {
@@ -48,7 +35,7 @@ export class JobRepository {
                 removeFingerprintOnSuccess: true,
                 metadata: {
                     bucketName: this.configuration.bucket,
-                    objectName: name,
+                    objectName: id,
                     contentType: 'application/json'
                 },
                 chunkSize: 6 * 1024 * 1024,
@@ -65,7 +52,7 @@ export class JobRepository {
                     });
                 },
                 onSuccess: function () {
-                    console.debug(`Uploaded ${name} to ${upload.url}`);
+                    console.debug(`Upload complete for ${id}`);
                     resolve(true);
                 },
             })

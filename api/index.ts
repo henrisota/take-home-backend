@@ -42,7 +42,9 @@ app.post(
 
 		const result = await service.import(request.source, request.data);
 
-		return c.json(result satisfies ImportResponse, 201);
+		return c.json({
+			jobId: result.id 
+		} satisfies ImportResponse, 201);
 	}
 );
 
