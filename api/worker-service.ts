@@ -1,12 +1,8 @@
 import { makeWorkerUtils, WorkerUtils } from "graphile-worker";
+import { WorkerPayload } from "./types";
 
 export interface WorkerServiceConfiguration {
     connectionString: string;
-}
-
-interface Payload {
-    id: string;
-    source: string;
 }
 
 export class WorkerService {
@@ -14,7 +10,7 @@ export class WorkerService {
 
     constructor(private readonly configuration: WorkerServiceConfiguration) {}
 
-    async addJob(payload: Payload) {
+    async addJob(payload: WorkerPayload) {
         const worker = await this.initializeWorker();
         const { id } = payload;
 

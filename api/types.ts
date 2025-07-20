@@ -45,3 +45,22 @@ export interface Job {
 	source: string;
 	payload: Payload;
 }
+
+export interface WorkerPayload {
+    id: string;
+    source: string;
+}
+
+interface Contact {
+	name: string;
+	email: string;
+	source: string;
+}
+
+interface ProcessedContact {
+	id: string;
+	name: string;
+	email: string;
+	source: string;
+	imported_at: string;
+}
