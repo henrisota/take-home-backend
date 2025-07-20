@@ -6,7 +6,7 @@ export interface WorkerServiceConfiguration {
     connectionString: string;
 }
 
-export class WorkerService {
+export class ImportWorkerService {
     private worker: WorkerUtils | undefined;
 
     constructor(

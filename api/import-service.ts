@@ -1,14 +1,14 @@
 import { customAlphabet } from "nanoid";
 import { JobRepository } from "./job-repository";
 import { Job, Payload, Result } from "./types";
-import { WorkerService } from "./worker-service";
+import { ImportWorkerService } from "./import-worker-service";
 
-export class Service {
+export class ImportService {
     private idGenerator: ReturnType<typeof customAlphabet>;
 
     constructor(
         private readonly jobRepository: JobRepository,
-        private readonly workerService: WorkerService
+        private readonly importWorkerService: ImportWorkerService
     ) {
         this.idGenerator = customAlphabet('1234567890abcdef', 10);
     }
@@ -24,7 +24,7 @@ export class Service {
 
         const savedJob = await this.jobRepository.save(job);
 
-        await this.workerService.addJob({
+        await this.importWorkerService.addJob({
             id: savedJob.id,
             source
         });

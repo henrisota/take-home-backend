@@ -1,6 +1,6 @@
 import { JobRepository } from "@/api/job-repository";
 import { WorkerPayload } from "@/api/types";
-import { WorkerService } from "@/api/worker-service";
+import { ImportWorkerService } from "@/api/import-worker-service";
 import { createClient } from "@supabase/supabase-js";
 import type { Task } from "graphile-worker";
 
@@ -27,7 +27,7 @@ const jobRepository = new JobRepository(
 		bucket: process.env.JOB_BUCKET ?? 'imports',
 	}
 );
-const workerService = new WorkerService(
+const importWorkerService = new ImportWorkerService(
 	jobRepository,
 	{
 		connectionString	
@@ -35,7 +35,7 @@ const workerService = new WorkerService(
 );
 
 const processImportJob: Task<'import'> = async (payload) => {
-	await workerService.processJob(payload);
+	await importWorkerService.processJob(payload);
 };
 
 export default processImportJob;

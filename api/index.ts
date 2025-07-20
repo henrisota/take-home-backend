@@ -6,9 +6,9 @@ import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
 
 import { JobRepository } from "./job-repository";
-import { Service } from "./service";
+import { ImportService } from "./import-service";
 import { ErrorResponse, ImportRequest, ImportRequestSchema,  ImportResponse } from "./types";
-import { WorkerService } from "./worker-service";
+import { ImportWorkerService } from "./import-worker-service";
 
 const app = new Hono();
 app.use(logger(), prettyJSON());
@@ -29,13 +29,13 @@ const jobRepository = new JobRepository(
 	}
 );
 
-const workerService = new WorkerService(
+const importWorkerService = new ImportWorkerService(
 	jobRepository,
 	{
 		connectionString
 	}
 );
-const importService = new Service(jobRepository, workerService);
+const importService = new ImportService(jobRepository, importWorkerService);
 
 app.post(
 	"/import",
