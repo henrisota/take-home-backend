@@ -8,6 +8,7 @@ import { prettyJSON } from 'hono/pretty-json';
 import { JobRepository } from "./job-repository";
 import { Service } from "./service";
 import { ErrorResponse, ImportRequest, ImportRequestSchema,  ImportResponse } from "./types";
+import { WorkerService } from "./worker-service";
 
 const app = new Hono();
 app.use(logger(), prettyJSON());
@@ -25,7 +26,10 @@ const jobRepository = new JobRepository({
 	bucket: process.env.JOB_BUCKET ?? 'imports',
 });
 
-const service = new Service(jobRepository);
+const workerService = new WorkerService({
+	connectionString
+});
+const service = new Service(jobRepository, workerService);
 
 app.post(
 	"/import",
