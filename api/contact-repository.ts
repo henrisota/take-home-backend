@@ -13,7 +13,7 @@ export class ContactRepository {
         const { data, error } = await this.supabase.from('contacts').insert([contact]).select().single();
 
         if (error) {
-            throw new Error(`Failed to save contact ${contact}`);
+            throw new Error(`Failed to save contact ${contact}: ${String(error)}`);
         }
 
         return {
@@ -23,5 +23,25 @@ export class ContactRepository {
             source: data.source,
             imported_at: data.imported_at
         } satisfies ProcessedContact;
+    }
+
+    async batchSave(contacts: Contact[]): Promise<ProcessedContact[]> {
+        if (!contacts.length) {
+            return [];
+        }
+
+        const { data, error } = await this.supabase.from('contacts').insert(contacts).select();
+
+        if (error) {
+            throw new Error(`Failed to save contacts: ${String(error)}`);
+        }
+
+        return data.map((item: any) => ({
+            id: item.id,
+            name: item.name,
+            email: item.email,
+            source: item.source,
+            imported_at: item.imported_at
+        })) satisfies ProcessedContact[];
     }
 }
