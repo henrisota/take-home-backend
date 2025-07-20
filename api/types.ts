@@ -69,13 +69,13 @@ export interface WorkerPayload {
     source: string;
 }
 
-interface Contact {
+export interface Contact {
 	name: string;
 	email: string;
 	source: string;
 }
 
-interface ProcessedContact {
+export interface ProcessedContact {
 	id: string;
 	name: string;
 	email: string;
