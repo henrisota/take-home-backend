@@ -1,57 +1,62 @@
-import { makeWorkerUtils, WorkerUtils } from "graphile-worker";
-import { Contact, WorkerPayload } from "./types";
-import { JobRepository } from "./job-repository";
-import { ContactRepository } from "./contact-repository";
+import { makeWorkerUtils, type WorkerUtils } from "graphile-worker";
+import type { ContactRepository } from "./contact-repository";
+import type { JobRepository } from "./job-repository";
+import type { Contact, WorkerPayload } from "./types";
 
 export interface WorkerServiceConfiguration {
-    connectionString: string;
+	connectionString: string;
 }
 
 export class ImportWorkerService {
-    private worker: WorkerUtils | undefined;
+	private worker: WorkerUtils | undefined;
 
-    constructor(
-        private readonly contactRepository: ContactRepository,
-        private readonly jobRepository: JobRepository,
-        private readonly configuration: WorkerServiceConfiguration
-    ) {}
+	constructor(
+		private readonly contactRepository: ContactRepository,
+		private readonly jobRepository: JobRepository,
+		private readonly configuration: WorkerServiceConfiguration,
+	) {}
 
-    async addJob(payload: WorkerPayload) {
-        const worker = await this.initializeWorker();
-        const { id } = payload;
+	async addJob(payload: WorkerPayload) {
+		const worker = await this.initializeWorker();
+		const { id } = payload;
 
-        console.info(`Queueing job ${id}`)
-        
-        await worker.addJob('import', payload);
+		console.info(`Queueing job ${id}`);
 
-        console.info(`Queued job ${id}`);
-    }
+		await worker.addJob("import", payload);
 
-    async processJob(payload: WorkerPayload) {
-        const { id, source } = payload;
+		console.info(`Queued job ${id}`);
+	}
 
-	    console.info(`Starting import job ${id} from source ${source}`);
+	async processJob(payload: WorkerPayload) {
+		const { id, source } = payload;
 
-        const importJob = await this.jobRepository.get(id);
+		console.info(`Starting import job ${id} from source ${source}`);
 
-        const contacts = importJob.payload.map((entity) => ({
-            name: entity.name,
-            email: entity.email,
-            source: importJob.source
-        }) satisfies Contact);
+		const importJob = await this.jobRepository.get(id);
 
-        const processedContacts = await this.contactRepository.batchSave(contacts);
+		const contacts = importJob.payload.map(
+			(entity) =>
+				({
+					name: entity.name,
+					email: entity.email,
+					source: importJob.source,
+				}) satisfies Contact,
+		);
 
-        console.info(`Completed import job ${id} by processing ${processedContacts.length} contacts`);
-    }
+		const processedContacts = await this.contactRepository.batchSave(contacts);
 
-    private async initializeWorker(): Promise<WorkerUtils> {
-        if (!this.worker) {
-            this.worker = await makeWorkerUtils({
-                connectionString: this.configuration.connectionString
-            });
-        }
+		console.info(
+			`Completed import job ${id} by processing ${processedContacts.length} contacts`,
+		);
+	}
 
-        return this.worker;
-    }
+	private async initializeWorker(): Promise<WorkerUtils> {
+		if (!this.worker) {
+			this.worker = await makeWorkerUtils({
+				connectionString: this.configuration.connectionString,
+			});
+		}
+
+		return this.worker;
+	}
 }

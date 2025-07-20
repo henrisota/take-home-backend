@@ -1,15 +1,19 @@
 import { serve } from "@hono/node-server";
+import { zValidator } from "@hono/zod-validator";
 import { createClient } from "@supabase/supabase-js";
-import { zValidator } from '@hono/zod-validator';
 import { Hono } from "hono";
-import { logger } from 'hono/logger';
-import { prettyJSON } from 'hono/pretty-json';
-
-import { JobRepository } from "./job-repository";
-import { ImportService } from "./import-service";
-import { ErrorResponse, ImportRequest, ImportRequestSchema,  ImportResponse } from "./types";
-import { ImportWorkerService } from "./import-worker-service";
+import { logger } from "hono/logger";
+import { prettyJSON } from "hono/pretty-json";
 import { ContactRepository } from "./contact-repository";
+import { ImportService } from "./import-service";
+import { ImportWorkerService } from "./import-worker-service";
+import { JobRepository } from "./job-repository";
+import {
+	type ErrorResponse,
+	type ImportRequest,
+	ImportRequestSchema,
+	type ImportResponse,
+} from "./types";
 
 const app = new Hono();
 app.use(logger(), prettyJSON());
@@ -21,35 +25,29 @@ const supabase = createClient(
 
 const connectionString = process.env.DATABASE_URL!;
 
-const contactRepository = new ContactRepository(
-	supabase,
-	{}
-);
-const jobRepository = new JobRepository(
-	supabase,
-	{
-		url: process.env.SUPABASE_URL!,
-		key: process.env.SUPABASE_SERVICE_ROLE_KEY!,
-		bucket: process.env.JOB_BUCKET ?? 'imports',
-	}
-);
+const contactRepository = new ContactRepository(supabase, {});
+const jobRepository = new JobRepository(supabase, {
+	url: process.env.SUPABASE_URL!,
+	key: process.env.SUPABASE_SERVICE_ROLE_KEY!,
+	bucket: process.env.JOB_BUCKET ?? "imports",
+});
 
 const importWorkerService = new ImportWorkerService(
 	contactRepository,
 	jobRepository,
 	{
-		connectionString
-	}
+		connectionString,
+	},
 );
 const importService = new ImportService(jobRepository, importWorkerService);
 
 app.post(
 	"/import",
-	zValidator('json', ImportRequestSchema, (result, c) => {
+	zValidator("json", ImportRequestSchema, (result, c) => {
 		if (!result.success) {
 			return c.json({
-				message: 'Invalid request body',
-				error: result.error
+				message: "Invalid request body",
+				error: result.error,
 			} satisfies ErrorResponse);
 		}
 	}),
@@ -58,10 +56,13 @@ app.post(
 
 		const result = await importService.import(request.source, request.data);
 
-		return c.json({
-			jobId: result.id 
-		} satisfies ImportResponse, 201);
-	}
+		return c.json(
+			{
+				jobId: result.id,
+			} satisfies ImportResponse,
+			201,
+		);
+	},
 );
 
 app.get("/health", async (c) => {

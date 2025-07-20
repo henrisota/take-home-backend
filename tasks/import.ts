@@ -1,9 +1,9 @@
+import { createClient } from "@supabase/supabase-js";
+import type { Task } from "graphile-worker";
 import { ContactRepository } from "@/api/contact-repository";
 import { ImportWorkerService } from "@/api/import-worker-service";
 import { JobRepository } from "@/api/job-repository";
-import { WorkerPayload } from "@/api/types";
-import { createClient } from "@supabase/supabase-js";
-import type { Task } from "graphile-worker";
+import type { WorkerPayload } from "@/api/types";
 
 declare global {
 	namespace GraphileWorker {
@@ -20,28 +20,22 @@ const supabase = createClient(
 
 const connectionString = process.env.DATABASE_URL!;
 
-const contactRepository = new ContactRepository(
-	supabase,
-	{}
-);
-const jobRepository = new JobRepository(
-	supabase,
-	{
-		url: process.env.SUPABASE_URL!,
-		key: process.env.SUPABASE_SERVICE_ROLE_KEY!,
-		bucket: process.env.JOB_BUCKET ?? 'imports',
-	}
-);
+const contactRepository = new ContactRepository(supabase, {});
+const jobRepository = new JobRepository(supabase, {
+	url: process.env.SUPABASE_URL!,
+	key: process.env.SUPABASE_SERVICE_ROLE_KEY!,
+	bucket: process.env.JOB_BUCKET ?? "imports",
+});
 
 const importWorkerService = new ImportWorkerService(
 	contactRepository,
 	jobRepository,
 	{
-		connectionString	
-	}
+		connectionString,
+	},
 );
 
-const processImportJob: Task<'import'> = async (payload) => {
+const processImportJob: Task<"import"> = async (payload) => {
 	await importWorkerService.processJob(payload);
 };
 
