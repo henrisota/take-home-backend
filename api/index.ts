@@ -6,7 +6,7 @@ import { logger } from 'hono/logger';
 import { prettyJSON } from 'hono/pretty-json';
 
 import { JobRepository } from "./job-repository";
-import { Service } from "./service";
+import { Service } from "./import-service";
 import { ErrorResponse, ImportRequest, ImportRequestSchema,  ImportResponse } from "./types";
 import { WorkerService } from "./worker-service";
 
@@ -29,7 +29,7 @@ const jobRepository = new JobRepository({
 const workerService = new WorkerService({
 	connectionString
 });
-const service = new Service(jobRepository, workerService);
+const importService = new Service(jobRepository, workerService);
 
 app.post(
 	"/import",
@@ -44,7 +44,7 @@ app.post(
 	async (c) => {
 		const request = await c.req.json<ImportRequest>();
 
-		const result = await service.import(request.source, request.data);
+		const result = await importService.import(request.source, request.data);
 
 		return c.json({
 			jobId: result.id 
